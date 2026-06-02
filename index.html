@@ -14,7 +14,7 @@
     --accent3: #00e5a0; --text: #e8e8f0; --muted: #7070a0;
     --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
   }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; font-variant-numeric: lining-nums; }
   .app { min-height: 100vh; padding: 40px 20px 100px; position: relative; overflow: hidden; }
   .app::before { content: ''; position: fixed; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,59,92,0.08) 0%, transparent 70%); pointer-events: none; z-index: 0; }
   .app::after { content: ''; position: fixed; bottom: -200px; left: -200px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
@@ -24,9 +24,9 @@
   .header-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,59,92,0.12); border: 1px solid rgba(255,59,92,0.3); border-radius: 100px; padding: 6px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
   .badge-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; flex-shrink: 0; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);} }
-  .header h1 { font-size: clamp(30px, 7vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+  .header h1 { font-size: clamp(30px, 7vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
   .header h1 span { color: var(--accent); }
-  .header p { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.7; font-family: var(--font-mono); }
+  .header p { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 
   .search-row { display: flex; margin-bottom: 32px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
   .search-prefix { background: var(--surface); padding: 0 18px; color: var(--muted); font-family: var(--font-mono); font-size: 16px; display: flex; align-items: center; border-right: 1px solid var(--border); flex-shrink: 0; }
@@ -114,6 +114,11 @@
 
 
   .hidden { display: none !important; }
+  /* 全域：所有數字強制不斜線 0 */
+  .score-val, .stat-val, .dim-score-text, .score-max {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif !important;
+    font-variant-numeric: lining-nums !important;
+  }
 </style>
 </head>
 <body>
@@ -122,7 +127,7 @@
     <div class="header">
       <div class="header-badge"><span class="badge-dot"></span>網軍偵防系統 v1.0</div>
       <h1>Threads<br /><span>網軍偵防師</span></h1>
-      <p>輸入帳號名稱，系統將同時分析自發文與留言行為，透過 AI 給出網軍風險評分（0–100 分）。</p>
+      <p>輸入帳號名稱，系統將同時分析自發文與留言行為，透過 AI 給出網軍風險評分（滿分 100 分）。</p>
     </div>
 
     <div class="search-row">
@@ -367,7 +372,6 @@ $("stat-own-posts").textContent=String(ownPostsCount);
   });
 
   $("analysis-text").textContent=analysis.analysis||"—";
-  $("raw-pre").textContent=JSON.stringify(data,null,2);
   $("result-card").classList.remove("hidden");
 }
 
