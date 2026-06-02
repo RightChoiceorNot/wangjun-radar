@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Threads 網軍偵搜器</title>
+<title>Threads 網軍偵防師</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
@@ -124,15 +124,15 @@
 <div class="app">
   <div class="container">
     <div class="header">
-      <div class="header-badge"><span class="badge-dot"></span>網軍偵搜系統 v2.0</div>
-      <h1>Threads<br /><span>網軍偵搜器</span></h1>
+      <div class="header-badge"><span class="badge-dot"></span>網軍偵防系統 v1.0</div>
+      <h1>Threads<br /><span>網軍偵防師</span></h1>
       <p>輸入帳號名稱，系統將同時分析自發文與留言行為，透過 AI 給出網軍風險評分（0–100 分）。</p>
     </div>
 
     <div class="search-row">
       <div class="search-prefix">@</div>
       <input id="username-input" type="text" placeholder="輸入 Threads 帳號名稱" autocomplete="off" autocapitalize="off" />
-      <button id="scan-btn">開始偵搜</button>
+      <button id="scan-btn">開始偵防</button>
     </div>
 
     <div class="steps hidden" id="steps">
@@ -166,7 +166,7 @@
           <div class="profile-handle" id="profile-handle">@—</div>
         </div>
         <div class="profile-stats">
-          <div class="stat"><div class="stat-val" id="stat-followers">—</div><div class="stat-key">粉絲</div></div>
+          
 <div class="stat"><div class="stat-val" id="stat-own-posts">—</div><div class="stat-key">自發文</div></div>
           <div class="stat"><div class="stat-val" id="stat-comments">—</div><div class="stat-key">留言</div></div>
         </div>
@@ -323,7 +323,7 @@ function setError(msg){
 function setScanning(on){
   $("scan-btn").disabled=on;
   $("username-input").disabled=on;
-  $("scan-btn").textContent=on?"分析中…":"開始偵搜";
+  $("scan-btn").textContent=on?"分析中…":"開始偵防";
 }
 
 function renderResult(data){
@@ -337,7 +337,7 @@ function renderResult(data){
   } else { $("avatar-wrap").textContent="👤"; }
   $("profile-name").textContent=profile.fullName||profile.username||"—";
   $("profile-handle").textContent="@"+(profile.username||"—")+(profile.isVerified?" ✓":"");
-  $("stat-followers").textContent=fmtNum(profile.followerCount);
+  
 $("stat-own-posts").textContent=String(ownPostsCount);
   $("stat-comments").textContent=String(commentsCount);
 
