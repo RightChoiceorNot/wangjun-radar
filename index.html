@@ -337,8 +337,12 @@ function renderResult(data){
   $("profile-name").textContent=profile.fullName||profile.username||"—";
   $("profile-handle").textContent="@"+(profile.username||"—")+(profile.isVerified?" ✓":"");
   
-$("stat-own-posts").textContent=String(ownPostsCount);
+  const fc=profile.followerCount;
+  $("stat-followers").textContent=(fc!=null)?fmtNum(fc):"—";
+  $("stat-own-posts").textContent=String(ownPostsCount);
+  $("stat-own-posts-label").textContent=`自發文 參考${ownPostsCount}篇`;
   $("stat-comments").textContent=String(commentsCount);
+  $("stat-comments-label").textContent=`留言 參考${commentsCount}則`;
 
   $("activity-ratio-text").textContent=`自發文 ${postPct}% ／ 留言 ${commentPct}%`;
   requestAnimationFrame(()=>setTimeout(()=>{
