@@ -50,7 +50,10 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-title { color: var(--accent); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
   .loading-sub { color: var(--muted); font-size: 12px; font-family: var(--font-mono); line-height: 1.6; }
-  .loading-timer { color: var(--border); font-size: 11px; font-family: var(--font-mono); margin-top: 10px; }
+  .progress-wrap { margin-top: 16px; }
+  .progress-bar-bg { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 99px; width: 0%; transition: width 0.5s ease; }
+  .progress-label { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; font-family: var(--font-mono); color: var(--muted); }
 
   .error-box { background: rgba(255,59,92,0.08); border: 1px solid rgba(255,59,92,0.3); border-radius: 12px; padding: 18px 22px; color: var(--accent); font-family: var(--font-mono); font-size: 13px; line-height: 1.6; margin-bottom: 24px; word-break: break-all; }
 
@@ -144,7 +147,13 @@
       <div class="spinner"></div>
       <div class="loading-title" id="loading-title">正在處理…</div>
       <div class="loading-sub" id="loading-sub"></div>
-      <div class="loading-timer" id="loading-timer"></div>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+        <div class="progress-label">
+          <span id="progress-pct">0%</span>
+          <span id="progress-time">預計約 90 秒</span>
+        </div>
+      </div>
     </div>
 
     <div class="error-box hidden" id="error-box"></div>
@@ -236,7 +245,7 @@
 
 <script>
 // ★ 部署後把這裡換成你的 Cloudflare Worker 網址 ★
-const WORKER_URL = "https://wangjun-radar.wd89md2wsd.workers.dev";
+const WORKER_URL = "https://wangjun-radar.YOUR_SUBDOMAIN.workers.dev";
 
 const $ = id => document.getElementById(id);
 function fmtNum(n) {
@@ -272,13 +281,32 @@ function setStep(n) {
 }
 
 let timerInterval=null;
+const TOTAL_SEC = 90;
 function startTimer(){
-  clearTimer(); let sec=0; $("loading-timer").textContent="";
-  timerInterval=setInterval(()=>{$("loading-timer").textContent=`已等待 ${++sec} 秒…`;},1000);
+  clearTimer();
+  let sec=0;
+  updateProgress(0);
+  timerInterval=setInterval(()=>{
+    sec++;
+    const pct=Math.min(Math.round((sec/TOTAL_SEC)*100), 95);
+    updateProgress(pct, TOTAL_SEC - sec);
+  },1000);
+}
+function updateProgress(pct, remaining){
+  const fill=$("progress-fill");
+  const pctEl=$("progress-pct");
+  const timeEl=$("progress-time");
+  if(fill) fill.style.width=pct+"%";
+  if(pctEl) pctEl.textContent=pct+"%";
+  if(timeEl){
+    if(remaining==null) timeEl.textContent="預計約 90 秒";
+    else if(remaining<=0) timeEl.textContent="即將完成…";
+    else timeEl.textContent=`剩餘約 ${remaining} 秒`;
+  }
 }
 function clearTimer(){
   if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
-  if($("loading-timer"))$("loading-timer").textContent="";
+  updateProgress(100, 0);
 }
 function setLoading(title,sub){
   if(!title){$("loading-box").classList.add("hidden");clearTimer();return;}
