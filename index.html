@@ -66,6 +66,8 @@
   .profile-info { flex: 1; min-width: 120px; }
   .profile-name { font-weight: 700; font-size: 16px; }
   .profile-handle { color: var(--muted); font-size: 13px; font-family: var(--font-mono); margin-top: 2px; }
+  .profile-location { font-size: 11px; color: var(--accent2); font-family: var(--font-mono); margin-top: 4px; }
+  .profile-location.foreign { color: var(--accent); }
   .profile-stats { display: flex; gap: 16px; flex-shrink: 0; flex-wrap: wrap; }
   .stat { text-align: center; }
   .stat-val { font-weight: 700; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; }
@@ -353,6 +355,19 @@ function renderResult(data){
   } else { $("avatar-wrap").textContent="👤"; }
   $("profile-name").textContent=profile.fullName||profile.username||"—";
   $("profile-handle").textContent="@"+(profile.username||"—")+(profile.isVerified?" ✓":"");
+  if (profile.location) {
+    const locEl = $("profile-location");
+    locEl.classList.remove("hidden");
+    // 判斷是否境外（非台灣地區）
+    const twKeywords = ["台灣","台北","台中","台南","高雄","新北","桃園","新竹","台東","花蓮","基隆","嘉義","苗栗","彰化","南投","雲林","屏東","宜蘭","澎湖","金門","連江"];
+    const isTW = twKeywords.some(k => profile.location.includes(k));
+    if (isTW) {
+      locEl.textContent = "📍 " + profile.location;
+    } else {
+      locEl.textContent = "⚠️ 境外帳號：" + profile.location;
+      locEl.classList.add("foreign");
+    }
+  }
   
   const fc=profile.followerCount;
   $("stat-followers").textContent=(fc!=null)?fmtNum(fc):"—";
