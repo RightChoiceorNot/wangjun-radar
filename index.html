@@ -113,6 +113,14 @@
   .analysis-text { font-size: 13px; line-height: 1.9; color: var(--text); font-family: var(--font-mono); white-space: pre-wrap; }
 
 
+  .cib-section { padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+  .cib-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .cib-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .cib-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; font-family: var(--font-mono); }
+  .cib-none { background: rgba(0,229,160,0.12); color: var(--accent3); }
+  .cib-low { background: rgba(255,184,0,0.12); color: var(--accent2); }
+  .cib-high { background: rgba(255,59,92,0.12); color: var(--accent); }
+  .cib-detail { font-size: 11px; color: var(--muted); font-family: var(--font-mono); line-height: 1.7; }
   .hidden { display: none !important; }
   /* 全域：所有數字強制不斜線 0 */
   .score-val, .stat-val, .dim-score-text, .score-max {
@@ -187,6 +195,15 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>自發文</div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>留言（在他人貼文）</div>
         </div>
+      </div>
+
+      <!-- CIB 協同偵測區塊 -->
+      <div class="cib-section hidden" id="cib-section">
+        <div class="cib-header">
+          <span class="cib-label">協同虛假行為偵測</span>
+          <span class="cib-badge" id="cib-badge">—</span>
+        </div>
+        <div class="cib-detail" id="cib-detail"></div>
       </div>
 
       <div class="score-section">
@@ -375,6 +392,24 @@ function renderResult(data){
     requestAnimationFrame(()=>setTimeout(()=>$(d.bId).style.width=`${(dim.score/d.max)*100}%`,200));
   });
 
+  // CIB 區塊
+  const cibSection = $("cib-section");
+  const cibScore = data.cibScore || 0;
+  const cibDetails = data.cibDetails || [];
+  if (cibScore > 0 || cibDetails.length > 0) {
+    cibSection.classList.remove("hidden");
+    const badge = $("cib-badge");
+    if (cibScore >= 15) { badge.textContent = "高度可疑協同"; badge.className = "cib-badge cib-high"; }
+    else if (cibScore >= 5) { badge.textContent = "部分協同跡象"; badge.className = "cib-badge cib-low"; }
+    else { badge.textContent = "無明顯協同"; badge.className = "cib-badge cib-none"; }
+    if (cibDetails.length > 0) {
+      $("cib-detail").innerHTML = cibDetails.map(d =>
+        `關鍵字「${d.keyword}」48 小時內有 <strong>${d.similarAccountCount}</strong> 個帳號發布類似內容`
+      ).join("<br>");
+    } else {
+      $("cib-detail").textContent = "未發現明顯的跨帳號協同發文跡象";
+    }
+  }
   $("analysis-text").textContent=analysis.analysis||"—";
   $("result-card").classList.remove("hidden");
 }
